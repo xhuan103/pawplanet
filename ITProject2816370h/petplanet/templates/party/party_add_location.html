@@ -1,0 +1,236 @@
+{% extends 'layout/layout_post_add.html' %}
+{% load static %}
+
+{% block head %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJPLMGv8lJQfOFfPJerAWwYfph3c7Zhuw&libraries=places"></script>
+<script>
+  let map;
+  let marker;
+  let selectedLocation;
+  var partyElement;
+
+  async function getUserIP() {
+    try {
+      const response = await fetch('https://ipinfo.io/json?token=982a4a5c12541d');
+      const data = await response.json();
+      const [lat, lng] = data.loc.split(',');
+      const lat_get = parseFloat(lat);
+      const lng_get = parseFloat(lng);
+      // document.getElementById('ip-address').textContent = `Latitude: ${lat}, Longitude: ${lng}`;
+      console.log( `Latitude: ${lat}, Longitude: ${lng}`)
+      partyElement = document.querySelector(".party_id");
+      initMap(lat_get, lng_get);
+    } catch (error) {
+        console.error('Error fetching IP address:', error);
+    }
+  }
+
+  function initMap(lat, lng) {
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: { lat: lat, lng: lng},
+      zoom: 15,
+    });
+
+    map.addListener('click', (e) => {
+      placeMarkerAndPanTo(e.latLng, map);
+      selectedLocation = e.latLng;
+    });
+
+    // Add a search box to the map
+    const input = document.getElementById('pac-input');
+    const inputbtn = document.getElementById('pac-inputbtn');
+    const searchBox = new google.maps.places.SearchBox(input);
+
+    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input,inputbtn);
+
+    searchBox.addListener('places_changed', () => {
+      const places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+          return;
+      }
+
+      // Clear out the old markers.
+      if (marker) {
+          marker.setMap(null);
+      }
+
+      // Get the place details from the first result.
+      const place = places[0];
+      if (!place.geometry || !place.geometry.location) {
+          console.log("Returned place contains no geometry");
+          return;
+      }
+
+      // Create a marker for the place.
+      marker = new google.maps.Marker({
+          map: map,
+          position: place.geometry.location
+      });
+
+      // Center the map to the searched location.
+      map.setCenter(place.geometry.location);
+      selectedLocation = place.geometry.location;
+    });
+  }
+
+  function placeMarkerAndPanTo(latLng, map) {
+    if (marker) {
+      marker.setPosition(latLng);
+    } else {
+      marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+      });
+    }
+    map.panTo(latLng);
+  }
+
+  function searchPlace() {
+    const input = document.getElementById('pac-input').value;
+    const service = new google.maps.places.PlacesService(map);
+
+    service.textSearch({ query: input }, (results, status) => {
+        if (status === google.maps.places.PlacesServiceStatus.OK && results) {
+            const place = results[0];
+
+            if (place.geometry && place.geometry.location) {
+                map.setCenter(place.geometry.location);
+                placeMarkerAndPanTo(place.geometry.location, map);
+                selectedLocation = place.geometry.location;
+            } else {
+                console.error('Place has no location geometry');
+            }
+        } else {
+            console.error('PlacesService failed due to:', status);
+        }
+    });
+  }
+
+  function saveLocation() {
+    if (selectedLocation) {
+        const data = {
+            lat: selectedLocation.lat(),
+            lng: selectedLocation.lng()
+        };
+
+        $.ajax({
+            url: '/community/party/add/location/',
+            type: 'POST',
+            data: {
+                lat: selectedLocation.lat(),
+                lng: selectedLocation.lng(),
+                partyId: partyElement.id
+            },
+            dataType: "JSON",
+            success: function (response) {
+              var destination = '/community/party/add/img/?pid=' + partyElement.id;
+              window.location.href = destination;
+            },
+            error: function (error) {
+              console.error('Error:', error);
+            }
+        });
+    } else {
+        alert('Please select a location on the map first.');
+    }
+  }
+
+</script>
+{% endblock %}
+{% block content %}
+<style>
+.mainbody h1{
+  color: #fc8c8c;
+}
+
+.mainbody h5{
+  color: #fc8c8c;
+}
+
+.mainbody{
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: center; 
+}
+
+.mainContainer {
+  border:2px solid #ffabab;
+  margin-top: 20px;
+  margin-left: 30px;
+  margin-right: 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width:60vw;
+  padding-top: 20px;
+  padding-bottom: 40px;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+  justify-content: center;
+  align-items: center;
+}
+
+.savebtn{
+  margin-right: 3px;
+  background-color: #ffabab;
+  color: white;
+  height: 50px;
+  width: 160px;
+  border: none;
+  border-radius: 15px;
+  margin-top: 30px;
+}
+
+.searchBox button{
+  margin-right: 3px;
+  background-color: #ffabab;
+  color: white;
+  height: 30px;
+  width: 80px;
+  border: none;
+  border-radius: 15px;
+}
+
+input{
+  width: 25vw;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  resize: none;
+  transition: border-color 0.3s;
+}
+
+input:focus {
+  border-color: #fc8c8c;
+  outline: none;
+}
+
+.searchBox{
+  display: flex;
+  flex-wrap: nowrap;
+}
+
+</style>
+
+<body onload="getUserIP()">
+  <p id="ip-address"></p>
+  <p id="{{party.id}}" class="party_id"></p>
+
+  <div class="mainbody">
+    <h1>Step 2/4: Select Location for your Party</h1>
+    <div class="mainContainer">
+      <h5>Click on the map to select a location or use the search box to find a location:</h3>
+        <div class="searchBox">
+          <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+          <button id="pac-inputbtn" onclick="searchPlace()">Search</button>  
+        </div>
+        <div id="map" style="height: 500px; width: 100%;"></div>
+        <button class="savebtn" onclick="saveLocation()">Save Location</button>
+    </div>
+  </div>
+
+  
+</body>
+{% endblock %}

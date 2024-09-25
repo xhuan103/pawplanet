@@ -1,0 +1,266 @@
+{% extends 'layout/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+.carousel-item {
+    height: 500px; 
+}
+.carousel-item img {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto; 
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: #f68d8d; 
+    border-radius: 50%; 
+    padding: 10px; 
+}
+
+.carousel-control-prev-icon:after,
+.carousel-control-next-icon:after {
+    font-size: 30px;
+    color: white;
+}
+
+
+.carousel-control-prev:hover,
+.carousel-control-next:hover,
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+    background-color: #ffd3d3; 
+    outline: none;
+}
+
+.post-content {
+    border: 2px solid #ffd3d3; 
+    border-radius: 15px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+
+}
+
+.carousel {
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.mainContainer {
+    display: flex;
+    margin: 20px;
+    padding: 0;
+    height: 100vh;
+}
+
+.post-content {
+    width: 61.8%;
+    padding: 20px;
+}
+
+.post-comment {
+    width: 38.2%;
+    padding: 20px;
+}
+
+.post-content-body-title{
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.post-content-body-text p{
+    max-height:350px; 
+    overflow: scroll;
+    overflow-y: auto;
+    overflow-x: hidden; 
+    padding: 5px; 
+    word-wrap: break-word; 
+}
+
+hr{
+    height: 3px; 
+    border: none;
+    background-image: linear-gradient(to right, #fc8c8c, #ffabab, #fadede);
+}
+
+.post-comment-form {
+    background-color: #ffd3d3; 
+    border-radius: 15px; 
+    padding: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    margin-bottom: 20px;
+}
+
+.post-comment-form label {
+    font-weight: bold;
+}
+
+
+.post-comment-form input {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    resize: none;
+    transition: border-color 0.3s;
+}
+
+.post-comment-form input:focus {
+    border-color: #fc8c8c;
+    outline: none;
+}
+
+.post-comment-form button {
+    width: 40%;
+    border: none;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-left: 15px;
+    margin-top: 5px;
+    background-color: rgb(161, 161, 161);
+}
+
+.post-comment-list {
+    border: 2px solid #ffd3d3; 
+    border-radius: 15px; 
+    padding: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-height: 750px; 
+    overflow-y: auto; 
+}
+
+.post-comment-list ul li{
+    border: none;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+
+</style>
+<div class="session_info" id="{{request.session.info.id}}"></div>
+
+<div class="mainContainer" id="{{post.id}}">
+
+    <div class="post-content">
+        <div class="post-content-img">
+            {% if imageset %}
+            <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                {% for image in imageset %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{image.image.url}}" class="d-block w-100" alt="{{ image.caption }}">
+                </div>
+                {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="post-content-body mt-3">
+            <div class="d-flex align-items-center">
+                <img src="{{post.author.avatar.url}}" width="50" height="50" class="rounded-circle" alt="{{post.author.nickname}} avatar">
+                    <h3 class="mx-3" >{{post.author.nickname}}</h3>  
+            </div>
+
+            <p class="mt-2" style="color: gray;">Last updated at: {{post.updated_at}}</p>
+
+            <div class="post-content-body-title">
+                <h1>{{post.title}}</h1>
+            </div>
+            <hr>
+            <div class="post-content-body-text">
+                <p>{{post.content}}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="post-comment">
+        <div class="post-comment-form">
+            <form id="formAdd" autocomplete="off">
+                <div class="container d-flex justify-content-left" style="flex-wrap: wrap;">
+                        <label>Leave your comment</label>
+                                {{ form.content }}
+                </div>   
+                <button id="btnAdd" type="button" class="btn btn-primary">Post</button>
+            </form> 
+        </div>
+
+        <div class="post-comment-list">
+            <ul class="list-group">
+                {% if commentset %}
+                    {% for comment in commentset %}
+                    <li class="list-group-item">
+                        <img src="{{comment.author.avatar.url}}" width="32" height="32" class="rounded-circle" alt="{{comment.author.nickname}} avatar">
+                        {{comment.author.nickname}}
+                        <br>
+                        {{ comment.content }}
+                    </li>
+                    <hr>
+                    {% endfor %}
+                {% else %}
+                    <p style="color: grey;">No comments...</p>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+
+$(function(){
+    bindBtnAddEvent();
+});
+
+function bindBtnAddEvent() {
+    $("#formAdd").submit(function(event) {
+        event.preventDefault();
+    });
+    
+    $("#btnAdd").click(function (){
+        if (confirm("Are you sure want to post the comment？")) {
+            var postId = $(".mainContainer").attr("id");
+            var sessionId = $(".session_info").attr("id");
+            var destination = '/community/post/?nid='+ postId + "&oid="+sessionId;
+            $.ajax({
+                url: destination,
+                type: "post",
+                data: $("#formAdd").serialize(),
+                dataType: "JSON",
+                success: function (res){
+                    if(res.status){
+                        alert("Posted");
+                        location.reload();
+                    }else{
+                        $.each(res.error,function(name,data){
+                            $("#id_" + name).next().text(data[0])
+                        })
+                    }
+                }
+            });
+        }
+    });
+}
+</script>
+
+{% endblock %}

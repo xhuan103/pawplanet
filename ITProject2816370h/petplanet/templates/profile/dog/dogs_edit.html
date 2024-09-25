@@ -1,0 +1,24 @@
+{% extends 'layout/layout_profile.html' %}
+{% load static %}
+
+{% block content %}
+
+<form method="post" enctype="multipart/form-data">
+    <div class="modal-body">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="formitems mt-3">
+                {% if field.name != 'avatar' %}
+                    <label>{{ field.label }}</label>
+                        {{ field }}
+                {% endif %} 
+            </div>
+        {% endfor %}
+    </div>
+    <div class="submit mt-3">
+        <button class="btn btn-primary" id="Btn" type="submit" >Save</button>
+    </div>
+</form>
+
+
+{% endblock %}

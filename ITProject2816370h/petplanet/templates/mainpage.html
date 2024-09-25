@@ -1,0 +1,294 @@
+{% extends 'layout/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .postContainer{
+        text-decoration: none;
+        color: black;
+    }
+
+    :root{
+        --card-width:20vw;
+        --divider-width:2vw;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .masonry{
+        width: calc(var(--card-width)*4 + var(--divider-width)*3);
+        /* height: 10000px; */
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        flex-wrap: wrap;
+        align-content: flex-start;
+        counter-reset: cards;
+    }
+
+    .card{
+        width: var(--card-width);
+        /* padding-bottom: 30px; */
+        margin-bottom: 30px;
+    }
+
+    .card img{
+        width: 100%;
+    }
+
+    .card .footer img{
+        width:32px;
+        height: 32px;
+        border-radius: 50%;
+        display: inline-block; 
+        overflow: hidden;
+
+    }
+
+    .divider1,
+    .divider2,
+    .divider3{
+        flex-basis: 100%;
+        width: var(--divider-width);
+        /* background-color: pink; */
+    }
+
+    .divider1{
+        order: 1;
+    }
+
+    .divider2{
+        order: 2;
+    }
+
+    .divider3{
+        order: 3;
+    }
+
+    .card:nth-of-type(4n+1){
+        order: 1;
+    }
+
+    .card:nth-of-type(4n+2){
+        order: 2;
+    }
+
+    .card:nth-of-type(4n+3){
+        order: 3;
+    }
+
+    .card:nth-of-type(4n+4){
+        order: 4;
+    }
+
+    .party_content {
+        background: rgb(255, 209, 216);
+        width: 100%;
+        overflow: hidden;
+        overflow-x: auto;
+        white-space: nowrap;
+        display: flex;
+        flex-wrap: nowrap;
+        border-radius: 15px;
+    }
+
+    .party_card {
+        position: relative; 
+        background: #fff;
+        border-radius: 15px;
+        margin: 10px;
+        flex: 0 0 auto; 
+        width: 280px; 
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        overflow: hidden; 
+    }
+
+    .party_card-body {
+        width: 100%;
+        padding: 10px;
+        color: #fff; 
+        text-align: center;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: baseline; 
+        align-items: baseline; 
+        background-size: cover;
+        background-position: center;
+    }
+
+    .party_card img {
+        display: none; 
+    }
+
+    .party_card-body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: inherit;
+        background-size: cover;
+        background-position: center;
+        z-index: -1; 
+        border-radius: 15px; 
+    }
+
+    .party_card-title {
+        font-size: 1.2em;
+        margin-bottom: 0.5em;
+        background: rgba(0, 0, 0, 0.6);
+        padding: 5px 10px;
+        border-radius: 5px;
+    }
+
+    .party_card-text {
+        font-size: 0.9em;
+        margin-bottom: 0.5em;
+        background: rgba(0, 0, 0, 0.6); 
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: #fff; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
+        text-align: left; 
+    }
+
+    .partyContainer{
+        text-decoration: none;
+    }
+
+    .card-header{
+    display: block; 
+    max-width: 100%;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    }
+
+    .card-body p{
+        display: -webkit-box; 
+        -webkit-box-orient: vertical;
+        overflow: hidden; 
+        max-height: 4.5em; 
+        text-overflow: ellipsis; 
+    }
+
+</style>
+
+<div class="main mx-5 mt-3">
+
+    <section class="party_content">
+    {% for party in partyset %}
+        {% for image_party in images_party %}
+            {% if image_party.party == party %}
+            
+            <div class="party_card">
+                <a href="/community/party/detail/?nid={{party.id}}" class="partyContainer" id="{{party.id}}">
+                    <div class="party_card-body" style="background-image: url('{{image_party.image.url}}');">
+                        <h5 class="party_card-title">{{party.title}}</h5>
+                        <p class="party_card-text">{{party.content}}</p>
+                        <p class="party_card-text"><small>{{party.hold_at}} at {{party.hold_at_time}}</small></p>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+    </section>
+
+    <div class="masonry mt-5">
+        {% for post in posts %}
+            {% if post.is_active %}
+                {% if post.has_image %}
+                <div class="card">
+                    <a href="/community/post/?nid={{post.id}}" class="postContainer" id="{{post.id}}">
+                        <div class="innercard">
+                            {% for image in imageset %}
+                                {% if image.post == post %}
+                                <img src="{{image.image.url}}" class="card-img-top" alt="{{image.caption}}">
+                                {% endif %}
+                            {% endfor %}
+                            <div class="card-body">
+                                <h5 class="card-title">{{post.title}}</h5>
+                                <p class="card-text">{{post.content}}</p>
+                                <footer class="footer">
+                                    <img src="{{post.author.avatar.url}}" alt="{{ post.author.name }}'s Avatar" width="32" height="32" class="rounded-circle">
+                                    {{post.author.nickname}}
+                                </footer>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                {% else %}
+                <div class="card">
+                    <a href="/community/post/?nid={{post.id}}" class="postContainer" id="{{post.id}}">
+                        <div class="innercard">
+                            <div class="card-header">
+                                {{post.title}}
+                            </div>
+                            <div class="card-body">
+                                <p>{{post.content}}</p>
+                                <footer class="footer">
+                                    <img src="{{post.author.avatar.url}}" alt="{{ post.author.name }}'s Avatar" width="32" height="32" class="rounded-circle">
+                                    {{post.author.nickname}}
+                                </footer>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                    {% endif %}
+            {% endif %}
+        {% endfor %}
+        <div class="divider1"></div>
+        <div class="divider2"></div>
+        <div class="divider3"></div>
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+<script>
+    function setMasonryHeight(){
+        const masonry = document.querySelector('.masonry');
+        const cards = document.querySelectorAll('.masonry .card');
+        const columns = 4; // Number of columns
+        const columnHeights = new Array(columns).fill(0); // Initialize an array to store the height of each column
+
+        cards.forEach((card, index) => {
+            const column = index % columns; // Determine the current column index
+            columnHeights[column] += card.offsetHeight + 30; // Add card height including margin-bottom to the column height
+        });
+
+        const maxHeight = Math.max(...columnHeights); // Find the maximum column height
+        masonry.style.height = maxHeight + 'px'; // Set the height of the masonry container
+    }
+
+    window.addEventListener('load', setMasonryHeight);
+
+    window.addEventListener('resize', function() {
+        colHeights = [0,0,0,0];
+        document.querySelectorAll('.masonry .card').forEach((card,index)=>{
+            const cardHeight = card.clientHeight;
+            const colIndex = (index + 1) % 4;
+            colHeights[colIndex] += cardHeight;
+        })
+        setMasonryHeight();
+    });
+
+</script>
+
+{% endblock %}

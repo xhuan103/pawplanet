@@ -1,0 +1,144 @@
+{% extends 'layout/layout_post_add.html' %}
+{% load static %}
+{% block content %}
+  <style>
+
+    .mainbody{
+      display: flex;
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center; 
+    }
+
+    .mainbody h1{
+      color: #fc8c8c;
+    }
+
+    .mainbody{
+      display: flex;
+      flex-direction: column;
+      justify-content: center; 
+      align-items: center; 
+    }
+
+    .mainContainer {
+      border:2px solid #ffabab;
+      margin-top: 20px;
+      margin-left: 30px;
+      margin-right: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width:60vw;
+      padding-top: 20px;
+      padding-bottom: 40px;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+      justify-content: center; 
+      align-items: center; 
+}
+
+    .submitbtns button {
+      width: 150px;
+      font-size: large;
+    }
+
+    .submitbtns .btn-secondary {
+      float: left;
+      margin-left: 3px;
+      width: 160px;
+      height: 45px;
+    }
+
+    .submitbtns .btn-primary {
+      float: right;
+      margin-right: 3px;
+      background-color: #ffabab;
+      color: white;
+      height: 45px;
+      width: 160px;
+      border: none;
+    }
+
+    .formitems label{
+      font-weight: bold;
+      margin-bottom: 8px;
+  }
+
+    .formitems input,
+    .formitems textarea{
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        padding: 10px;
+        resize: none;
+        transition: border-color 0.3s;
+        width: 50vw;
+    }
+
+    .formitems input:focus,
+    .formitems textarea:focus {
+        border-color: #fc8c8c;
+        outline: none;
+    }
+
+
+  </style>
+
+<div class="mainbody">
+  <h1>Step 1/2: Post Content</h1>
+  <div class="mainContainer">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="formitems mt-3">
+                    {% if field.name != 'avatar' %}
+                        <label>{{ field.label }}</label>
+                            <div>
+                              {{ field }}
+                            </div>
+                    {% endif %} 
+                </div>
+            {% endfor %}
+        </div>
+        <div class="submitbtns mt-3">
+            <button type="button" class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#leave" role="button" >Cancel</button>
+            <button id="btnAdd" type="submit" class="btn btn-primary">Next Step</button>
+        </div>
+    </form>
+  </div>
+</div>
+
+  <div class="modal fade" id="leave" tabindex="-1" aria-labelledby="leaveLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="leaveLabel">Warning</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          You have unsaved changes. Are you sure want to leave?
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <a href="/community/mainpage/" class="btn btn-primary" type="button">Leave</a>
+        </div>
+      </div>
+    </div>
+  </div>
+ 
+
+
+
+{% endblock %}
+
+
+{% block js %}
+<script>
+  $(document).ready(function() {
+      $('#myModal').modal('show');
+  });
+</script>
+
+{% endblock %}

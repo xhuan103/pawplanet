@@ -1,0 +1,164 @@
+{% extends 'layout/layout_profile.html' %}
+{% load static %}
+
+
+{% block content %}
+
+<style>
+    .sorrydog{
+        height: 300px;
+        width: auto;
+    }
+
+    .message{
+        flex: 1; /* 占据剩余空间 */
+        display: flex;
+        align-items: center;
+        margin-left: 150px;
+        margin-top: 150px;
+        flex-wrap: wrap;
+        flex-direction: column;
+    }
+
+    .list-group {
+            border: none;
+        }
+
+    .list-group-item {
+        border: none;
+    }
+
+    .dog-card {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+    }
+
+    .add-dog-button button{
+        background-color: #fc8c8c;
+        border: #fc8c8c;
+    }
+
+    .dog-card .card{
+        border-color: #fc8c8c;
+    }
+
+    .card img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 100%; 
+        height: 200px;
+        width: 200px;
+        border-radius: 50%;
+        
+
+    }
+
+    .image-container {
+
+        background-color: #fadede;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center; 
+       
+    }
+    
+</style>
+
+{% if dogset %}
+<div div class="doginfo">
+    <div class="add-dog-button">
+        <button type="button" class="btn btn-primary btn-lg mx-3 mt-3" data-bs-toggle="modal" data-bs-target="#addDog">Add a Dog</button>
+    </div>
+
+    <div class="dog-card">
+        {% for dog in dogset %}
+        <div class="card mx-3 mt-3" style="width: 18rem;">
+            <div class="image-container">
+                <img src="{{dog.avatar.url}}" class="card-img-top" alt="{{ dog.name }}'s Avatar">
+            </div>
+            
+            <div class="card-body">
+            <h5 class="card-title">{{dog.name}}</h5>
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">{{dog.age_year}} Years {{dog.age_month}} Months</li>
+                <li class="list-group-item">{{dog.get_gender_display}}</li>
+                <li class="list-group-item">{{dog.breed}}</li>
+                <li class="list-group-item">Spayed or Neutered?   {{dog.get_status_display}}</li>
+            </ul>
+            <div class="card-body">
+            <a href="/profile/dogs/edit/?nid={{dog.id}}&oid={{ dog.owner.id }}" class="card-link">Edit</a>
+            <a href="/profile/dogs/delete/?nid={{dog.id}}&oid={{ dog.owner.id }}" class="card-link" style="color: red">Remove</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="message">
+    <img src="{% static 'img/sorry.png' %}" class="sorrydog" alt="sorry">
+    <p style="color: red;font-size: larger;">Oops, you haven't add any dog yet...</p>
+    <a href="#" class="icon-link justify-content-center" data-bs-toggle="modal" data-bs-target="#addDog" role="button">Add a Dog</a>
+</div>
+{% endif %}
+
+<div class="modal fade" id="addDog" aria-hidden="true" aria-labelledby="addDogLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addDogLabel">Add a Dog</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="formitems mt-3">
+                        <label>{{ field.label }}</label>
+                            {{ field }}
+                            {% if field.name == 'avatar' %}
+                                <img id="avatarPreview" src="#" alt="Image Preview" style="display: none; max-width: 100px; max-height: 100px;" />
+                            {% endif %} 
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                <button class="btn btn-primary" id="addBtn" name="addDogBtn" type="submit" >Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const avatarField = document.querySelector("input[name='avatar']");
+        const avatarPreview = document.getElementById("avatarPreview");
+
+        avatarField.addEventListener("change", function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    avatarPreview.src = e.target.result;
+                    avatarPreview.style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            } else {
+                avatarPreview.style.display = "none";
+            }
+        });
+    });
+</script>
+
+{% endblock %}

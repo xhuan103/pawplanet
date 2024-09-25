@@ -1,0 +1,131 @@
+{% extends 'layout/layout_post_add.html' %}
+{% load static %}
+
+{% block head %}
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJPLMGv8lJQfOFfPJerAWwYfph3c7Zhuw&libraries=places"></script>
+
+<script>
+  let map;
+  let marker;
+  let selectedLocation;
+  var partyElement;
+  var lat_get;
+  var lng_get;
+
+  document.addEventListener('DOMContentLoaded', async function() {
+    // Fetch user IP first and then initialize the map and parties
+    try {
+        // Fetch user's IP and location
+        const { lat_get, lng_get } = await getUserIP();
+
+        // After fetching IP, proceed with the rest of the setup
+        var ulElements = document.querySelectorAll('ul');
+        var parties = [];
+
+        ulElements.forEach(function(ul) {
+            var idElement = ul.querySelector('.pid');
+            var titleElement = ul.querySelector('.title');
+            var latElement = ul.querySelector('.lat');
+            var lngElement = ul.querySelector('.lng');
+            var contentElement = ul.querySelector('.content');
+
+            if (idElement && titleElement && latElement && lngElement && contentElement) {
+                var pid = idElement.getAttribute('id'); 
+                var title = titleElement.getAttribute('id'); 
+                var lat = parseFloat(latElement.getAttribute('id')); 
+                var lng = parseFloat(lngElement.getAttribute('id')); 
+                var content = contentElement.getAttribute('id'); 
+
+                var party = {
+                    title: title,
+                    lat: lat,
+                    lng: lng,
+                    content: content,
+                    pid: pid
+                };
+
+                parties.push(party);
+            }
+        });
+
+        console.log(parties);
+
+        parties.forEach(function(party) {
+            console.log(party.title);
+        });
+
+        // Initialize the map with user's location and parties
+        initMap(parties, lat_get, lng_get);
+
+    } catch (error) {
+        console.error('Error during initialization:', error);
+    }
+});
+
+async function getUserIP() {
+    try {
+        const response = await fetch('https://ipinfo.io/json?token=982a4a5c12541d');
+        const data = await response.json();
+        const [lat, lng] = data.loc.split(',');
+        const lat_get = parseFloat(lat);
+        const lng_get = parseFloat(lng);
+        console.log(`Latitude: ${lat_get}, Longitude: ${lng_get}`);
+
+        // Return the coordinates to be used later
+        return { lat_get, lng_get };
+    } catch (error) {
+        console.error('Error fetching IP address:', error);
+        throw error; // Rethrow to handle it in the calling function
+    }
+}
+
+function initMap(parties, lat_get, lng_get) {
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 13,
+        center: { lat: lat_get, lng: lng_get }
+    });
+
+    parties.forEach(function(party) {
+        var marker = new google.maps.Marker({
+            position: { lat: party.lat, lng: party.lng },
+            map: map,
+            title: party.title
+        });
+
+        var infowindow = new google.maps.InfoWindow({
+            content: `<h3>${party.title}</h3><p>${party.content}</p><a href="/community/party/detail/?nid=${party.pid}">View details</a>`
+        });
+
+        marker.addListener('click', function() {
+            infowindow.open(map, marker);
+        });
+    });
+}
+
+</script>
+{% endblock %}
+
+{% block content %}
+<style>
+
+</style>
+
+<body onload="getUserIP()">
+    <p id="ip-address"></p>
+    <h1>Find party on map</h1>
+    <div style="display: none;">
+        {% for party in partyset %}
+        <ul>
+            <li class="pid" id="{{party.id}}"></li>
+            <li class="title" id="{{party.title}}"></li>
+            <li class="lat" id="{{party.latitude}}"></li>
+            <li class="lng" id="{{party.longitude}}"></li>    
+            <li class="content" id="{{party.content}}"></li>       
+        </ul>
+        {% endfor %}
+    </div>
+    
+
+    <div id="map" style="height: 100vh; width: 100%;"></div>
+</body>
+{% endblock %}

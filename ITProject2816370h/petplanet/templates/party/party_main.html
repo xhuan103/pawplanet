@@ -1,0 +1,124 @@
+{% extends 'layout/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .partyContainer{
+        text-decoration: none;
+        color: black;
+        border: 2px solid #ffd3d3; 
+        border-radius: 15px;
+    }
+
+    .card-title {
+        overflow-y: auto; 
+        overflow-wrap: break-word; 
+        height: 60px;
+    }
+
+    .card-content-text {
+        overflow-y: auto; 
+        padding: 5px; 
+        word-wrap: break-word;
+        height: 100px;
+        display: block; 
+        text-overflow: ellipsis; 
+        white-space: pre-wrap;
+    }
+
+    .card{
+        width: 18rem;
+        border: none;
+    }
+
+    .party-cards{
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .card-img-top {
+        height: 200px;
+        object-fit: contain; 
+        display: block;
+        margin: 0 auto; 
+        background-color: #ffd3d3;
+        border-top-right-radius: 15px;
+        border-top-left-radius: 15px;
+    }
+    
+    .innercard {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+    }
+
+    .party-content-list {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .party-content-list li {
+        border-radius: 4px;
+    }
+
+
+    hr{
+        height: 3px;
+        border: none;
+        background-image: linear-gradient(to right, #fc8c8c, #ffabab, #fadede);
+    }
+
+    #viewmap {
+        background-color: #fc8c8c;
+        border: #fc8c8c;
+        margin-left: 65px;
+    }
+</style>
+
+<div>
+    <a href="/community/party/map/" id="viewmap" type="button" class="btn btn-primary">View on Map</a>
+</div>
+
+<div class="main mx-5 mt-3">
+    <div class="party-cards">
+        {% for party in parties %}
+            {% if party.is_active %}
+            <div class="card mx-3 mt-3">
+                <a href="/community/party/detail/?nid={{party.id}}" class="partyContainer" id="{{party.id}}">
+                    <div class="innercard">
+                        {% for image in imageset %}
+                            {% if image.party == party %}
+                            <img src="{{image.image.url}}" class="card-img-top" alt="{{image.caption}}">
+                            {% endif %}
+                        {% endfor %}
+                        <div class="card-body">
+                            <h4 class="card-title">{{party.title}}</h4>
+                            <div class="card-content-text" style="overflow-y: auto; overflow-wrap: break-word;white-space: pre-wrap;word-wrap: break-word;">{{party.content}}</div>
+                            <hr>
+                            <ul class="party-content-list">
+                                <li><p class="card-text">Number of dogs allowed: {{party.dog_limit}}</p></li>
+                                <li><p class="card-text">{{party.hold_at}} at {{party.hold_at_time}}</p></li> 
+                            </ul>
+                            <hr>
+                            <footer class="footer">
+                                <img src="{{party.author.avatar.url}}" alt="{{ party.author.name }}'s Avatar" width="32" height="32" class="rounded-circle">
+                                {{party.author.nickname}}
+                            </footer>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+</div>
+
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

@@ -1,0 +1,147 @@
+{% extends 'layout/layout_profile.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .card{
+        width: 70vw;
+        margin-bottom: 10px;
+    }
+
+    .post_delete{
+        color: grey;
+    }
+
+    .icons{
+        margin-bottom: 5px;
+        margin-right: 5px;
+    }
+
+    .icons a{
+        text-decoration: none;
+        margin-left: 12px;
+    }
+
+    .card .card-body blockquote footer{
+        font-size: small;
+    }
+
+    .postContainer{
+        text-decoration: none;
+        color:black
+    }
+    a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .card-header{
+    display: block; 
+    max-width: 100%; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    }
+
+    .card-body p{
+        display: -webkit-box; 
+        -webkit-box-orient: vertical;
+        overflow: hidden; 
+        max-height: 4.5em; 
+        text-overflow: ellipsis; 
+    }
+
+</style>
+
+<div class="main mx-5 mt-3">
+
+    
+    {% if party_set %}
+        {% for party in party_set %}
+        <a href="/community/party/detail/?nid={{party.id}}" class="partyContainer" id="{{party.id}}">
+            <div class="card">
+                <div class="card-header">
+                    {{party.title}}
+                </div>
+                <div class="card-body">
+                    <blockquote class="blockquote mb-0">
+                        <p>{{party.content}}</p>
+                        <footer class="blockquote-footer">Start at {{party.hold_at}} {{party.hold_at_time}}</footer>
+                    </blockquote>
+                </div>
+
+                <div class="icons position-absolute bottom-0 end-0">
+                    <a href="/profile/party/edit/?nid={{party.id}}" class="party_edit" id="{{ party.id }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                        </svg>
+                    </a>
+                    <a href="#" class="party_delete" id="{{ party.id }}" data-bs-toggle="modal" data-bs-target="#party_delete" role="button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+
+    
+    {% else %}
+    <div class="message">
+        <img src="{% static 'img/sorry.png' %}" class="sorrydog" alt="sorry">
+        <p style="color: red;font-size: larger; margin-left: 60px;">Oops, you haven't make any party now</p>
+        <a href="/community/party/add/form/?nid={{request.session.info.id}}" class="btn justify-content-center" style="color: white; background-color: #fc8c8c;margin-left: 190px;">Hold a Party</a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="modal fade" id="party_delete" tabindex="-1" aria-labelledby="party_deleteLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="party_deleteLabel">Warning</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure want to delete the post.<br>
+          This action cannot be recovered.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="deleteBtn" type="button" class=" btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+
+
+
+{% endblock %}
+
+{% block js %}
+
+<script>
+  
+    document.querySelectorAll('.party_delete').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var id = this.getAttribute('id');
+            console.log(id);
+            var newConfirmBtn = document.getElementById('deleteBtn').cloneNode(true);
+            document.getElementById('deleteBtn').replaceWith(newConfirmBtn);
+            
+            newConfirmBtn.addEventListener('click', function() {
+                var location = '/profile/party/delete/?nid=' + id;
+                window.location.href = location; 
+            });
+            
+        });
+    });
+
+</script>
+
+
+{% endblock %}

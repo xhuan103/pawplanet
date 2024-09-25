@@ -1,0 +1,419 @@
+{% extends 'layout/layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+.carousel {
+    padding: 10px; /* 内边距为10px */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
+.carousel-item {
+    height: 500px; /* 根据你的需求调整高度 */
+}
+.carousel-item img {
+    width: auto;
+    height: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto; /* 使图片居中 */
+}
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+    background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色背景 */
+    border-radius: 50%; /* 圆形按钮 */
+    padding: 10px; /* 内间距 */
+}
+
+.carousel-control-prev-icon:after,
+.carousel-control-next-icon:after {
+    font-size: 30px;
+    color: white; /* 白色箭头 */
+}
+
+/* 当按钮被悬停或聚焦时，改变其样式 */
+.carousel-control-prev:hover,
+.carousel-control-next:hover,
+.carousel-control-prev:focus,
+.carousel-control-next:focus {
+    background-color: rgba(0, 0, 0, 0.7); /* 更深的背景色 */
+    outline: none;
+}
+
+.dog-map-container{
+    display: flex;
+}
+
+.party-content-body-title{
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.party-content-body-text p{
+    overflow: scroll;
+    overflow-y: auto; 
+    overflow-x: hidden; 
+    padding: 5px; 
+    word-wrap: break-word; 
+}
+
+#map {
+    height: 20vh;
+    width: 50vw;
+    background-color: #fc8c8c;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.map {
+    height: 20vh;
+    width: 50vw;
+    background-color: white;
+    margin-left: 40px;
+}
+
+.party-content{
+    display: flex;
+}
+
+
+.party-content-img {
+    width: 61.8%;
+    padding: 20px;
+}
+
+.party-content-body {
+    width: 38.2%;
+    padding: 20px;
+}
+
+hr{
+    height: 3px; 
+    border: none;
+    background-image: linear-gradient(to right, #fc8c8c, #ffabab, #fadede); 
+}
+
+.dog-list{
+    display: flex;
+    flex-wrap: wrap;
+    overflow-y: auto;
+    background-color: rgb(234, 234, 234);
+    border-radius: 15px;
+    height: 20vh;
+    width: 50vw;
+    margin-left: 30px;
+
+}
+
+.dog-list-item button{
+    color: #fc8c8c;
+    border: 2px solid #ffabab;
+    background-color: white;
+    height: 60px;
+    width: 60px;
+}
+
+.comment-container{
+    border: 2px solid #ffcfcf;
+    border-radius: 15px;
+    max-height: 80vh;
+    max-width: 90vw;
+    margin-left: 30px;
+}
+
+.comment-add-container {
+    margin-top: 20px;
+    margin-left: 30px;
+    width: 100vw;
+}
+.comment-add-container label{
+    font-weight: bold;
+}
+
+.comment-add-container input{
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    resize: none;
+    transition: border-color 0.3s;
+}
+
+.comment-add-container button{
+    background-color: #ffabab;
+    color: white;
+    height: 45px;
+    width: 70px;
+    margin-top: 25px;
+    border: none;
+}
+
+.comment-add-container input:focus {
+    border-color: #fc8c8c;
+    outline: none;
+}
+
+.comment-list {
+    border: none;
+    padding: 10px;
+    max-height: 750px; 
+    overflow-y: auto;
+}
+
+.comment-list ul li{
+    border: none;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+
+</style>
+<div class="session_info" id="{{request.session.info.id}}"></div>
+
+<div class="mainContainer mx-5" id="{{party.id}}">
+
+    <div class="party-content">
+        <div class="party-content-img">
+            {% if imageset %}
+            <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                {% for image in imageset %}
+                <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                    <img src="{{image.image.url}}" class="d-block w-100" alt="{{ image.caption }}">
+                </div>
+                {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            {% endif %}
+        </div>
+        
+
+        <div class="party-content-body mt-3">
+            <div class="d-flex align-items-center">
+                <img src="{{party.author.avatar.url}}" width="50" height="50" class="rounded-circle" alt="{{party.author.nickname}} avatar">
+                    <h3 class="mx-3" >{{party.author.nickname}}</h3>  
+            </div>
+
+            <p class="mt-2" style="color: gray;">{{ party.hold_at }} at {{ party.hold_at_time }} </p>
+
+            <div class="party-content-body-title">
+                <h1>{{party.title}}</h1>
+            </div>
+            <hr>
+            <div class="party-content-body-text">
+                <p>{{party.content}}</p>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="dog-map-container">
+        <div>
+            <div class="modal fade" id="register" tabindex="-1" aria-labelledby="registerLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="registerLabel">Request to attend party</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="formApplication" method="post" autocomplete="off">
+                                <div class="container d-flex justify-content-left" style="flex-wrap: wrap;">
+                                    <div class="mx-3" style="width: 40%;">
+                                        {% for field in application %}
+                                        <div class="form-group">
+                                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                                            {{ field }}
+                                        </div>
+                                        {% endfor %}
+                                    </div>   
+                                </div>
+                            </form> 
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <a href="#" id="btnApplication" class="btn btn-primary" type="button">Send</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dog-list">
+
+            <div class="dog-list-item">
+                <button type="button" class="btn btn-primary mx-1 mt-2" style="width: 90px;"  data-bs-toggle="modal" data-bs-target="#register" role="button" >Attend</button>
+                {% for dog in party.dogs.all %}
+                <button type="button" class="btn mx-1 mt-2" data-bs-container="body" data-bs-toggle="popover" data-bs-placement="bottom" data-bs-content="Name: {{dog.name}}<br>Owner: {{ dog.owner.nickname }}<br>Gender: {{ dog.get_gender_display }}<br>{{dog.breed}}<br>{{dog.age_year}} Years {{dog.age_month}} Months<br>Spayed or Neutered? {{dog.get_status_display}}">
+                    <img src="{{dog.avatar.url}}" width="32" height="32" class="rounded-circle" alt="{{dog.name}} avatar">
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="map">
+        <!-- save api -->
+            <div id="map"></div>
+            <div class="lat" id="latitude" data-value="{{ party.latitude }}"></div>
+            <div class="lng" id="longitude" data-value="{{ party.longitude }}"></div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="comment-container mt-5">
+        <div>
+            <form id="formAdd" autocomplete="off">
+                <div class="comment-add-container d-flex justify-content-left">
+                    <div class="mx-3" style="width: 40%;">
+                        <label>Leave your comment</label>
+                                {{ form.content }}
+                        <span style="color: red; position: absolute;"></span>
+                        <div class="mt-4"></div>
+                    </div>   
+                    <div class="mx-3" style="width: 100%;">
+                        <button id="btnAdd" type="button" class="btn btn-primary">Post</button>
+                    </div>
+                </div>
+            </form> 
+        </div>
+
+        <div class="comment-list">
+            <ul class="list-group">
+                {% for comment in commentset %}
+
+                <li class="list-group-item">
+                    <img src="{{comment.author.avatar.url}}" width="32" height="32" class="rounded-circle mx-3" alt="{{comment.author.nickname}} avatar">
+                    {{comment.author.nickname}} 
+                    <br>
+                    <p class="mx-4 mt-2">
+                        {{ comment.content }}
+                    </p>
+
+                    <hr>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    
+</div>
+
+
+
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+
+document.addEventListener('DOMContentLoaded', function () {
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl, {html:true}))
+});
+
+$(function(){
+    bindBtnAddEvent();
+    bindBtnApplication();
+});
+
+function bindBtnAddEvent() {
+    $("#formAdd").submit(function(event) {
+        event.preventDefault();
+    });
+    
+    $("#btnAdd").click(function (){
+        if (confirm("Save the comment?")) {
+            var partyId = $(".mainContainer").attr("id");
+            var sessionId = $(".session_info").attr("id");
+            var destination = '/community/party/detail/?nid='+ partyId + "&oid="+sessionId;
+            $.ajax({
+                url: destination,
+                type: "post",
+                data: $("#formAdd").serialize(),
+                dataType: "JSON",
+                success: function (res){
+                    if(res.status){
+                        alert("Saved");
+                        location.reload();
+                    }else{
+                        $.each(res.error,function(name,data){
+                            $("#id_" + name).next().text(data[0])
+                        })
+                    }
+                }
+            });
+        }
+    });
+}
+
+function bindBtnApplication() {
+    $("#formApplication").submit(function(event) {
+        event.preventDefault();
+    });
+    
+    $("#btnApplication").click(function (){
+        if (confirm("Send the application?")) {
+            var partyId = $(".mainContainer").attr("id");
+            var sessionId = $(".session_info").attr("id");
+            var destination = '/community/party/application/?nid='+ partyId + "&oid="+sessionId;
+            $.ajax({
+                url: destination,
+                type: "post",
+                data: $("#formApplication").serialize(),
+                dataType: "JSON",
+                success: function (res){
+                    if(res.status){
+                        alert("Sent");
+                        location.reload();
+                    }else{
+                        $.each(res.error,function(name,data){
+                            $("#id_" + name).next().text(data[0])
+                        })
+                    }
+                }
+            });
+        }
+    });
+}
+</script>
+
+<!-- save api -->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBJPLMGv8lJQfOFfPJerAWwYfph3c7Zhuw&libraries=places"></script>
+
+<script>
+    function initMap() {
+    
+        const lat = parseFloat(document.getElementById("latitude").getAttribute("data-value"));
+        const lng = parseFloat(document.getElementById("longitude").getAttribute("data-value"));
+        const position = { lat: lat, lng: lng };
+
+        
+        const map = new google.maps.Map(document.getElementById("map"), {
+            zoom: 14,
+            center: position
+        });
+
+       
+        const marker = new google.maps.Marker({
+            position: position,
+            map: map,
+            title: "This is a tag"
+        });
+    }
+
+    window.onload = initMap;
+</script>
+{% endblock %}

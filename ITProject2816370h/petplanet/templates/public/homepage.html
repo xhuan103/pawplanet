@@ -1,0 +1,187 @@
+{% extends 'layout/layout_guest.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    .container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.8); 
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .innerContainer{
+        display: flex;
+        flex-direction: column;
+    }
+
+    img{
+        width: 90px;
+        height: auto;
+    }
+
+    ul li strong{
+        font-weight: bold;
+        color: #fc8c8c;
+        font-size: larger;
+    }
+
+    .content{
+        margin-top: 120px;
+        
+    }
+
+    hr{
+        height: 6px;
+        border: none;
+        background-image: linear-gradient(to right, #fb9f9f, #ffabab, #fadede); 
+    }
+
+    h1{
+        color: white;
+        background-color: #fb9f9f;
+        height: 130px;
+        width: 400px;
+        text-align: center;
+        padding-top: 30px;
+        border-radius: 15px;
+        font-size: 60px;
+    }
+
+    h3{
+        color: rgb(84, 84, 84);
+    }
+
+    .features{
+        float: right;
+        margin-left: 180px;
+        padding-top: 200px;
+        padding-bottom: 200px;
+    }
+
+    .features ul{
+        list-style-type: none; 
+    }
+
+    .description{
+        margin-left: 30px;
+        font-weight: bolder;
+        margin-top: 50px;
+    }
+
+    .joinbtn{
+        background-color: #ffabab;
+        color: white;
+        height: 55px;
+        width: 270px;
+        margin-top: 25px;
+        border: none;
+        text-decoration: none;
+        text-align: center;
+        font-size: 36px;
+        border-radius: 15px;
+        margin-left: 70px;
+    }
+
+    #joinlink{
+        color: #fc8c8c;
+        text-decoration-color: #fc8c8c;
+        font-size: 30px;
+        margin-top: 60px;
+    }
+
+    #aboutlink{
+        color: #fc8c8c;
+        text-decoration-color: #fc8c8c;
+        font-size: 12px;
+        margin-top: 40px;
+    }
+
+    .contentlink{
+        text-decoration: none;
+    }
+
+
+
+    .login p{
+        margin-top: 40px;
+        margin-left: 120px;
+    }
+
+    .login a{
+        margin-left: 180px;
+        color: #fc8c8c;
+        text-decoration-color: #fc8c8c;
+    }
+
+</style>
+
+<div class="container"> 
+    <div class="innerContainer">
+        <a href="/login/" class="contentlink">
+            <div class="logo">
+                <img src="{% static 'img/logo_only.png' %}" alt="logo">
+            </div>
+        </a>
+        <a href="/login/" class="contentlink">
+            <div class="content">
+
+                <h1 class="webname">PawPlanet</h1>
+                <h3>A Comprehensive Paws Community</h3>
+                <hr>
+            
+            </div>
+        </a>
+        <div>
+            <a href="/login/" class="icon-link justify-content-center" id="joinlink">
+                Join us!
+            </a>
+        </div>
+        <div>
+            <a href="/about/" class="icon-link justify-content-center" id="aboutlink" target="_blank">
+                About Web Author
+            </a>
+        </div>
+    </div>
+    <div class="features">
+        <ul>
+            <li><strong>Interactive Forums: </strong> <br>Make post to share your happiness with others.</li>
+            <li><strong>Party Organize:</strong> <br>Hold customized parties and events<br>allowing you and your dogs to meet new friends.</li>
+            <li><strong>Experience Sharing:</strong> <br>Share your own experiences to help other pet owners.</li>
+        </ul>
+        <div class="description">
+            <p>
+                We aim to provide a warm home for every pet owner and their pets<br>We hope our platform can connect pet lovers<br>Making pets' lives happier and enriching your life
+            </p>
+        </div>
+
+        <div>
+            <a href="/login/" class="joinbtn btn-primary" type="button">
+                Join us! 
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-heart-arrow mx-2" viewBox="0 0 16 16">
+                    <path d="M6.707 9h4.364c-.536 1.573 2.028 3.806 4.929-.5-2.9-4.306-5.465-2.073-4.929-.5H6.707L4.854 6.146a.5.5 0 1 0-.708.708L5.293 8h-.586L2.854 6.146a.5.5 0 1 0-.708.708L3.293 8h-.586L.854 6.146a.5.5 0 1 0-.708.708L1.793 8.5.146 10.146a.5.5 0 0 0 .708.708L2.707 9h.586l-1.147 1.146a.5.5 0 0 0 .708.708L4.707 9h.586l-1.147 1.146a.5.5 0 0 0 .708.708z"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-hearts" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M4.931.481c1.627-1.671 5.692 1.254 0 5.015-5.692-3.76-1.626-6.686 0-5.015m6.84 1.794c1.084-1.114 3.795.836 0 3.343-3.795-2.507-1.084-4.457 0-3.343M7.84 7.642c2.71-2.786 9.486 2.09 0 8.358-9.487-6.268-2.71-11.144 0-8.358"/>
+                </svg>
+            </a>
+            <div class="login">
+                <p>Already have an account?</p>
+                <a href="/login/" class="icon-link justify-content-center" id="loginlink">
+                    Log in
+                </a>    
+            </div>
+            
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

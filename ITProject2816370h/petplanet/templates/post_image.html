@@ -1,0 +1,177 @@
+{% extends 'layout/layout_post_add.html' %}
+{% load static %}
+
+
+{% block content %}
+<style>
+    .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
+        background-color: white;
+        border-radius: 15px;
+        height: 120px;
+        width: 120px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center; 
+        align-items: center; 
+    }
+
+    .preview-container img{
+        width: 120px;
+        height: auto;
+        
+    }
+
+    .delete_image {
+        position: absolute;
+        top: 0; 
+        right: 0;
+        background: rgba(255, 255, 255, 0.5); 
+        border-radius: 50%;
+        padding: 2px; 
+    }
+
+    .delete_image svg {
+        display: block;
+    }
+
+    .mainbody h1{
+        color: #fc8c8c;
+    }
+
+    .mainbody{
+        display: flex;
+        flex-direction: column;
+        justify-content: center; 
+        align-items: center;
+    }
+
+    .mainContainer {
+        border:2px solid #ffabab;
+        margin-top: 20px;
+        margin-left: 30px;
+        margin-right: 30px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width:60vw;
+        padding-top: 20px;
+        padding-bottom: 40px;
+        border-radius: 15px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        justify-content: center;
+        align-items: center;
+    }
+
+    .submitbtns .btn-primary {
+        margin-right: 3px;
+        background-color: #ffabab;
+        color: white;
+        height: 50px;
+        width: 160px;
+        border: none;
+    }
+
+    .image-btn-container .btn-primary {
+        margin-right: 3px;
+        background-color: white;
+        color: #ffabab;
+        height: 120px;
+        width: 120px;
+        border: none;
+    }
+
+    .image-btn-container .btn-primary svg{
+        height: 40px;
+        width: 40px;
+    }
+
+    .preview-container{
+        width: 50vw;
+        height: 30vh;
+        background-color: #ffd3d3; 
+        border-radius: 15px; 
+        padding: 10px; 
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+        margin-bottom: 20px;
+    }
+
+    
+</style>
+
+<div class="modal fade" id="addImg" aria-hidden="true" aria-labelledby="addImgLabel" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addImgLabel">Add a Photo</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="formitems mt-3">
+                        <label>{{ field.label }}</label>
+                            {{ field }}
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                <button class="btn btn-primary" id="addBtn" name="addImgBtn" type="submit" >Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="mainbody">
+    <h1>Step 2/2: Add Images to Post</h1>
+    <div class="mainContainer">
+
+        <div class="preview-container" id="previewContainer">
+            <div class="image-btn-container">
+                <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#addImg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-square-fill" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm6.5 4.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3a.5.5 0 0 1 1 0"/>
+                    </svg>
+                    <div style="font-size: medium;">Add Images</div>
+                </button>
+            </div>
+
+            {% for img in imageset %}
+            <div class="image-container">
+                <div><img src="{{ img.image.url }}" class="image" alt="{{ img.caption }}"></div>
+                <a href="/profile/posts/delete/image/?nid={{nid}}&pid={{pid}}&img={{img.id}}" class="delete_image">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
+                    </svg>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="submitbtns mt-3">
+            <a href="/community/mainpage/" class="btn btn-secondary btn-lg mx-5">Skip & Save</a>
+            <a href="/community/mainpage/" class="btn btn-primary btn-lg mx-5">Save</a>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+
+{% endblock %}
+
+{% block js %}
+
+{% endblock %}

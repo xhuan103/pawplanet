@@ -1,0 +1,65 @@
+{% extends 'layout/layout_post_add.html' %}
+{% load static %}
+{% block content %}
+  <style>
+    .submitbtns button {
+      width: 150px;
+      font-size: large;
+    }
+
+    .submitbtns .btn-secondary {
+      float: left;
+      margin-left: 3px;
+    }
+
+    .submitbtns .btn-primary {
+      float: right;
+      margin-right: 3px;
+    }
+  </style>
+
+  <div class="mainContainer">
+    <form method="post" enctype="multipart/form-data">
+        <div class="modal-body">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="formitems mt-3">
+                    {% if field.name != 'avatar' %}
+                        <label>{{ field.label }}</label>
+                            {{ field }}
+                    {% endif %} 
+                </div>
+            {% endfor %}
+        </div>
+        <div class="submitbtns mt-3">
+            <button type="button" class="btn btn-secondary"  data-bs-toggle="modal" data-bs-target="#leave" role="button" >Cancel</button>
+            <button id="btnAdd" type="submit" class="btn btn-primary">Save</button>
+        </div>
+    </form>
+
+    <div class="modal fade" id="leave" tabindex="-1" aria-labelledby="leaveLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="leaveLabel">Warning</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            You have unsaved changes. Are you sure want to leave?
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <a href="/community/mainpage/" class="btn btn-primary" type="button">Leave</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
+
+
+{% block js %}
+
+
+{% endblock %}

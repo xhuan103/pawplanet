@@ -1,0 +1,52 @@
+{% extends 'layout/layout_guest.html' %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .form-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: rgba(255, 255, 255, 0.8); 
+      padding: 20px;
+      border-radius: 10px;
+      z-index: 1000;
+    }
+
+    .form-container form{
+      margin: 50px;
+    }
+
+    .formitems{
+      width: 450px;
+    }
+
+</style>
+
+<div class="form-container"> 
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+    <div class="formitems mt-3">
+      <label>{{ field.label }}</label>
+      {{ field }}
+    </div>
+    {% endfor %}
+    <div class="d-flex justify-content-center align-items-center">
+      <button type="submit" class="btn btn-primary mb-3 mt-5">Create Account</button>
+    </div>
+    <div class="d-flex flex-column justify-content-center align-items-center mt-3">
+      <label>Already have an account?</label>
+      <a href="/login/" class="icon-link justify-content-center">
+        Log in
+      </a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
